@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { jobTypes } from "./job-types";
+import { jobTypes, locationTypes } from "./job-types";
 
 const requireString = z.string().min(1, " Required");
 const numericRequiredString = requireString.regex(/^\d+$/, "must be a number");
@@ -23,6 +23,23 @@ const applicationSchema = z
     path: ["applicationEmail"],
   });
 
+const locationSchema = z
+  .object({
+    locationType: requireString.refine(
+      (value) => locationTypes.includes(value),
+      "Invalid Location type",
+    ),
+    location: z.string().max(100).optional(),
+  })
+  .refine(
+    (data) =>
+      !data.locationType || data.locationType === "Remote" || data.location,
+    {
+      message: "Location is require for on-site jobs",
+      path: ["location"],
+    },
+  );
+
 export const createJobSchema = z
   .object({
     title: requireString.max(100),
@@ -38,7 +55,10 @@ export const createJobSchema = z
       "Number can't be longer than 9 degits",
     ),
   })
-  .and(applicationSchema);
+  .and(applicationSchema)
+  .and(locationSchema);
+
+export type CraeteJobValues = z.infer<typeof createJobSchema>;
 
 export const jobFilterSchema = z.object({
   q: z.string().optional(),
