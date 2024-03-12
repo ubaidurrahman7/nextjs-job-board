@@ -28,8 +28,14 @@ export default function Footer() {
             </Link>
           </div>
         </div>
-        <div className="text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Flow Jobs, Inc. All rights reserved.
+        <div className="flex-col items-center justify-between space-y-2 text-center text-sm text-muted-foreground md:flex">
+          <div className="flex-shrink-0   text-center md:text-start">
+            Created by Ubaid
+          </div>
+          <div className="flex-grow">
+            &copy; {new Date().getFullYear()} Flow Jobs, Inc. All rights
+            reserved.
+          </div>
         </div>
       </div>
     </footer>

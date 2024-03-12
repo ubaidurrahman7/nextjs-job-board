@@ -7,11 +7,11 @@ const numericRequiredString = requireString.regex(/^\d+$/, "must be a number");
 const companyLogoSchema = z
   .custom<File | undefined>()
   .refine((file) => {
-    !file || (file instanceof File && file.type.startsWith("image/"));
+    return !file || (file instanceof File && file.type.startsWith("image/"));
   }, "Must be an Image file")
   .refine((file) => {
     return !file || file.size < 1024 * 1024 * 2;
-  }, "file must be less than 2MB");
+  }, "File must be less than 2MB");
 
 const applicationSchema = z
   .object({
@@ -33,9 +33,9 @@ const locationSchema = z
   })
   .refine(
     (data) =>
-      !data.locationType || data.locationType === "Remote" || data.location,
+      !data.locationType || data.locationType === "Remote" || !!data.location,
     {
-      message: "Location is require for on-site jobs",
+      message: "Location is required for on-site jobs",
       path: ["location"],
     },
   );
