@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import H1 from "@/components/ui/h1";
-import { CraeteJobValues, createJobSchema } from "@/lib/validation";
+import { CreateJobValues, createJobSchema } from "@/lib/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ import { draftToMarkdown } from "markdown-draft-js";
 import LoadingButton from "@/components/LoadingButton";
 
 export default function NewJobForm() {
-  const form = useForm<CraeteJobValues>({
+  const form = useForm<CreateJobValues>({
     resolver: zodResolver(createJobSchema),
   });
 
@@ -36,15 +36,19 @@ export default function NewJobForm() {
     setFocus,
     formState: { isSubmitting },
   } = form;
-  async function onSubmit(values: CraeteJobValues) {
-    console.log(JSON.stringify(values, null, 2));
+
+  async function onSubmit(values: CreateJobValues) {
+    "use server";
+    console.log("form Values: ", values);
+    alert(JSON.stringify(values, null, 2));
   }
+
   return (
     <main className="m-auto my-10 max-w-3xl space-y-10">
       <div className="space-y-5 text-center">
         <H1>Find your perfect developer</H1>
         <p className="text-muted-foreground">
-          Get your job posting seen by milion of job seekers
+          Get your job posting seen by thousands of job seekers.
         </p>
       </div>
       <div className="space-y-6 rounded-lg border p-4">
@@ -67,13 +71,12 @@ export default function NewJobForm() {
                 <FormItem>
                   <FormLabel>Job title</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g AI Developer" {...field} />
+                    <Input placeholder="e.g. Frontend Developer" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={control}
               name="type"
@@ -85,9 +88,9 @@ export default function NewJobForm() {
                       <option value="" hidden>
                         Select an option
                       </option>
-                      {jobTypes.map((jobtype) => (
-                        <option key={jobtype} value={jobtype}>
-                          {jobtype}
+                      {jobTypes.map((jobType) => (
+                        <option key={jobType} value={jobType}>
+                          {jobType}
                         </option>
                       ))}
                     </Select>
@@ -96,7 +99,6 @@ export default function NewJobForm() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={control}
               name="companyName"
@@ -118,8 +120,8 @@ export default function NewJobForm() {
                   <FormLabel>Company logo</FormLabel>
                   <FormControl>
                     <Input
-                      type="file"
                       {...fieldValues}
+                      type="file"
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
@@ -133,18 +135,27 @@ export default function NewJobForm() {
             />
             <FormField
               control={control}
-              name="location"
+              name="locationType"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Select {...field} defaultValue="">
+                    <Select
+                      {...field}
+                      defaultValue=""
+                      onChange={(e) => {
+                        field.onChange(e);
+                        if (e.currentTarget.value === "Remote") {
+                          trigger("location");
+                        }
+                      }}
+                    >
                       <option value="" hidden>
                         Select an option
                       </option>
-                      {locationTypes.map((locationsType) => (
-                        <option key={locationsType} value={locationsType}>
-                          {locationsType}
+                      {locationTypes.map((locationType) => (
+                        <option key={locationType} value={locationType}>
+                          {locationType}
                         </option>
                       ))}
                     </Select>
@@ -213,7 +224,7 @@ export default function NewJobForm() {
                       <FormControl>
                         <Input
                           placeholder="Website"
-                          type="Url"
+                          type="url"
                           {...field}
                           onChange={(e) => {
                             field.onChange(e);
