@@ -26,7 +26,7 @@ const applicationSchema = z
 
 const locationSchema = z
   .object({
-    locationType: requiredString.refine(
+    locationtype: requiredString.refine(
       (value) => locationTypes.includes(value),
       "Invalid location type",
     ),
@@ -34,7 +34,7 @@ const locationSchema = z
   })
   .refine(
     (data) =>
-      !data.locationType || data.locationType === "Remote" || data.location,
+      !data.locationtype || data.locationtype === "Remote" || data.location,
     {
       message: "Location is required for on-site jobs",
       path: ["location"],

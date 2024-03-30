@@ -5,6 +5,8 @@ import { createJobSchema } from "@/lib/validation";
 import { nanoid } from "nanoid";
 import { put } from "@vercel/blob";
 import path from "path";
+import prisma from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
 export async function createJobPosting(formData: FormData) {
   const values = Object.fromEntries(formData.entries());
@@ -14,7 +16,7 @@ export async function createJobPosting(formData: FormData) {
     type,
     companyName,
     companyLogo,
-    locationType,
+    locationtype,
     location,
     applicationEmail,
     applicationUrl,
@@ -37,4 +39,22 @@ export async function createJobPosting(formData: FormData) {
     );
     companyLogoUrl = blob.url;
   }
+
+  await prisma.job.create({
+    data: {
+      slug,
+      title: title.trim(),
+      type,
+      companyName: companyName.trim(),
+      companyLogoUrl,
+      location,
+      locationtype,
+      applicationEmail: applicationEmail?.trim(),
+      applicationUrl: applicationUrl?.trim(),
+      description: description?.trim(),
+      salary: parseInt(salary),
+    },
+  });
+
+  redirect("/job-submitted");
 }
